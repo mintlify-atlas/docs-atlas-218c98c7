@@ -1,0 +1,184 @@
+---
+title: "Publishing & Releases"
+description: "How Etcher is packaged, signed, and published across Windows, macOS, and Linux."
+---
+
+Etcher uses [Electron Forge](https://www.electronforge.io/) to build and package release artifacts for all supported platforms. Most of the release pipeline runs automatically on CI, but maintainers need to follow several manual steps to publish a final release.
+
+## Release types
+
+Etcher publishes three types of releases to [GitHub Releases](https://github.com/balena-io/etcher/releases):
+
+| Type | Description |
+|------|-------------|
+| **Draft** | Created automatically from each pull request, tagged with the branch name |
+| **Pre-release** | Created automatically after every merge to `master` with an auto-incremented version |
+| **Release** | A final, stable release promoted manually by a maintainer |
+
+The release version is generated automatically from commit messages. See [commit guidelines](/contributing/commit-guidelines) for how semver types drive version bumps.
+
+## Release artifacts
+
+Running `npm run make` on each platform produces the targets defined in `forge.config.ts` and places them in `out/make`.
+
+<Tabs>
+  <Tab title="Windows">
+    Etcher produces a **Squirrel installer** (`.exe`) for Windows, built with `MakerSquirrel`.
+
+    ```bash
+    npm run make
+    ```
+
+    Artifacts are placed in `out/make/squirrel.windows/`.
+
+    The installer uses a custom setup icon (`assets/icon.ico`) and loading animation (`assets/icon.png`).
+  </Tab>
+  <Tab title="macOS">
+    Etcher produces a **DMG disk image** for macOS, built with `MakerDMG`.
+
+    ```bash
+    npm run make
+    ```
+
+    Artifacts are placed in `out/make/`. The DMG uses a custom background (`assets/dmg/background.tiff`) and icon (`assets/icon.icns`).
+  </Tab>
+  <Tab title="Linux">
+    Etcher produces a **Debian package** (`.deb`) and **RPM package** (`.rpm`) for Linux.
+
+    ```bash
+    npm run make
+    ```
+
+    Artifacts are placed in `out/make/deb/` and `out/make/rpm/` respectively.
+
+    <Note>
+    AppImage support exists in `forge.config.ts` but is currently commented out. Only `.deb` and `.rpm` targets are active.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Code signing
+
+Release builds must be signed. The CI pipeline handles signing automatically for macOS and Windows, but you need the relevant credentials in your environment.
+
+<AccordionGroup>
+  <Accordion title="macOS — notarytool">
+    1. Obtain the **Apple Developer ID certificate** for applications distributed outside the Mac App Store from the balena.io Apple account.
+    2. Install the certificate to your Mac's Keychain by double-clicking the certificate file.
+
+    The application is signed automatically at build time. For production builds, notarisation is performed using Apple's `notarytool` with the following environment variables:
+
+    ```bash
+    export XCODE_APP_LOADER_EMAIL="<apple-id>"
+    export XCODE_APP_LOADER_PASSWORD="<app-specific-password>"
+    export XCODE_APP_LOADER_TEAM_ID="<team-id>"
+    ```
+
+    The packager config also applies hardened runtime entitlements from `entitlements.mac.plist`.
+  </Accordion>
+  <Accordion title="Windows — signtool">
+    1. Obtain the code signing certificate and decryption key from the appropriate balena.io team member.
+    2. Place the certificate at the root of the repository as `certificate.p12`.
+
+    For production builds, signtool signs using a SHA1 hash:
+
+    ```bash
+    export SM_CODE_SIGNING_CERT_SHA1_HASH="<sha1-hash>"
+    export TIMESTAMP_SERVER="<timestamp-url>"
+    ```
+
+    The sign parameters used are:
+
+    ```
+    -sha1 <hash> -tr <timestamp-server> -td sha256 -fd sha256 -d balena-etcher
+    ```
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+Never set `NODE_ENV=production` locally unless you have all the required signing credentials. Without them, the build will fail.
+</Warning>
+
+## Generating a release build
+
+<Steps>
+  <Step title="Set analytics tokens">
+    Before building production binaries, export the Sentry DSN token. Etcher reads this from the `SENTRY_TOKEN` environment variable:
+
+    ```bash
+    export SENTRY_TOKEN="<your-sentry-dsn>"
+    ```
+  </Step>
+  <Step title="Clean previous build output">
+    Delete `.webpack/` and `out/` to avoid stale artifacts:
+
+    ```bash
+    rm -rf .webpack out
+    ```
+  </Step>
+  <Step title="Run the make command">
+    ```bash
+    npm run make
+    ```
+
+    This produces all targets for the current host platform and architecture. Run this on each platform separately (Windows, macOS, Linux).
+  </Step>
+  <Step title="Collect artifacts">
+    Artifacts are in `out/make`. Upload them to the GitHub release draft.
+  </Step>
+</Steps>
+
+## Publishing a release
+
+<Steps>
+  <Step title="Test the build artifacts">
+    Test the release on **all supported operating systems** before promoting it. Refer to [MANUAL-TESTING.md](https://github.com/balena-io/etcher/blob/master/docs/MANUAL-TESTING.md) for the test checklist.
+
+    If you find regressions, open issues for each one and decide whether to fix them in the current release or follow up with a patch.
+  </Step>
+  <Step title="Publish the GitHub release draft">
+    Go to [GitHub Releases](https://github.com/balena-io/etcher/releases), verify the draft, and publish it.
+  </Step>
+  <Step title="Submit Windows binaries to Symantec">
+    Submit the Windows binary for whitelisting via [Symantec's false-positive form](https://submit.symantec.com/false_positive/standard/) to prevent antivirus warnings:
+
+    - **Submission type:** "Provide a direct download URL"
+    - **Software name:** Etcher
+    - **Detection name:** WS.Reputation.1
+    - **Contact name:** Balena.io Ltd
+    - **Email:** hello@etcher.io
+  </Step>
+  <Step title="Upload packages to Cloudfront">
+    Wait 2–3 hours after publishing and check Sentry for elevated error rates or regressions. If the release is stable, log in to Cloudfront and upload the `.deb` and `.rpm` files.
+
+    <Warning>
+    If you observe elevated error rates, pull the release immediately and issue a patched version before continuing.
+    </Warning>
+  </Step>
+  <Step title="Publish to Homebrew Cask">
+    1. Update [`Casks/balenaetcher.rb`](https://github.com/caskroom/homebrew-cask/blob/master/Casks/balenaetcher.rb) with the new version number and `sha256` hash.
+    2. Send a pull request with those changes to [`caskroom/homebrew-cask`](https://github.com/caskroom/homebrew-cask).
+  </Step>
+  <Step title="Announce the release">
+    - Post a message on the [Etcher forum](https://forums.balena.io/c/etcher) with the relevant section of the changelog.
+    - Post the changelog with the `#release-notes` tag on the internal chat.
+    - For releases with significant changes: write a blog post and/or email the Etcher mailing list.
+  </Step>
+</Steps>
+
+## Handling a problematic release
+
+If a release causes an elevated error rate after shipping:
+
+1. **Revert the release** as soon as possible by deleting its artifacts from S3 and Cloudfront.
+2. The update notifier only advertises a version if all expected files are present, so removing a single artifact is enough to take down the whole version.
+
+To remove a file from S3:
+
+```bash
+aws s3api delete-object --bucket <bucket-name> --key <file-name>
+```
+
+## Version management
+
+The version number in `package.json` is updated automatically by the CI pipeline based on the semver change type in commit messages. You do not need to manually bump the version before cutting a release.

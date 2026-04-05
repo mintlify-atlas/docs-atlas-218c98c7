@@ -1,0 +1,137 @@
+---
+title: "Architecture overview"
+description: "Understand how Etcher's Electron processes, React frontend, and privileged sidecar work together."
+---
+
+Etcher is an Electron desktop application. This page describes its high-level architecture, directory structure, and the flash flow that moves an image from source to drive.
+
+## Technologies
+
+Etcher is built with the following major frameworks and libraries:
+
+| Technology | Role |
+|---|---|
+| [Electron](https://electronjs.org) | Desktop application shell; provides the main and renderer processes |
+| [Node.js](https://nodejs.org) | Runtime for the main process and the privileged sidecar |
+| [React](https://react.dev) | UI component library for the renderer process |
+| [Redux](https://redux.js.org) | Predictable state container |
+| [ImmutableJS](https://immutable-js.com) | Immutable data structures for Redux state |
+| [TypeScript](https://www.typescriptlang.org) | Primary language across the codebase |
+| [webpack](https://webpack.js.org) | Module bundler, configured via `electron-forge` |
+| [etcher-sdk](https://github.com/balena-io-modules/etcher-sdk) | Core image-writing logic |
+| [drivelist](https://github.com/balena-io-modules/drivelist) | Cross-platform drive enumeration |
+
+## Module approach
+
+Rather than embedding all functionality in a monolithic codebase, Etcher follows a ["lego block" approach](https://github.com/sindresorhus/ama/issues/10#issuecomment-117766328): low-level concerns are extracted into standalone npm modules (`etcher-sdk`, `drivelist`) that can be reused independently. The main Etcher repository acts as the front-end and glue layer.
+
+This makes it easier to share improvements across projects, but can require a new contributor to trace logic across multiple repositories.
+
+## Two-process architecture
+
+Electron applications run code in two separate processes:
+
+- **Main process** (`lib/gui/etcher.ts`) — Node.js process that owns the application lifecycle, native menus, and the OS-level window. It launches the renderer and manages the privileged sidecar.
+- **Renderer process** (`lib/gui/app/`) — Chromium-based process that renders the React UI and handles user interaction.
+
+Communication between the two processes goes through Electron's IPC mechanism. The `lib/gui/webapi.ts` module is a preload bridge that exposes a small set of helpers (such as resolving the sidecar binary path) to the renderer via `window.etcher`.
+
+## Privileged sidecar
+
+Writing to a raw block device requires elevated privileges. To avoid running the entire Electron app as root, Etcher spawns a separate privileged child process — the sidecar — to perform the actual write.
+
+The flow works as follows:
+
+1. The renderer calls `flash()` in `lib/gui/app/modules/image-writer.ts`.
+2. `image-writer.ts` calls `spawnChildAndConnect()` from `lib/gui/app/modules/api.ts`, which spawns the sidecar with elevated permissions and establishes a WebSocket connection to it.
+3. The renderer emits a `write` event over the connection, passing the image source and destination drives.
+4. The sidecar writes the image using `etcher-sdk` and streams `state` progress events back to the renderer.
+5. On completion, the sidecar emits `done` (or `abort` / `fail`), and the renderer updates the UI.
+
+```
+Renderer process
+  └── image-writer.ts
+        └── api.ts → spawnChildAndConnect()
+                          └── Privileged sidecar process
+                                └── etcher-sdk (writes to drive)
+                                      └── progress events → renderer
+```
+
+## Directory structure
+
+### `lib/gui/` — Electron application
+
+```
+lib/gui/
+├── etcher.ts        # Main process entry point: app lifecycle, auto-updater, window setup
+├── menu.ts          # Native application menu definitions
+├── webapi.ts        # Local WebSocket API server used to communicate with the sidecar
+└── app/             # Renderer process
+```
+
+### `lib/gui/app/` — Renderer process
+
+```
+lib/gui/app/
+├── app.ts           # React app entry point
+├── renderer.ts      # Renderer bootstrap
+├── preload.ts       # Electron preload script
+├── components/      # React UI components
+├── models/          # Redux state models
+├── modules/         # Core application logic
+├── os/              # OS-level integrations (window progress bar)
+├── pages/           # Top-level page components
+└── utils/           # Shared renderer utilities
+```
+
+### `lib/gui/app/components/` — React components
+
+| Component | Description |
+|---|---|
+| `drive-selector/` | Modal for selecting target drives to write to |
+| `drive-status-warning-modal/` | Modal that warns about drive status issues before flashing |
+| `source-selector/` | Panel for choosing the image source (file, URL, or device) |
+| `flash-results/` | Summary screen shown after a flash completes |
+| `finish/` | Post-flash completion view |
+| `flash-another/` | Prompt to flash additional drives after a successful write |
+| `reduced-flashing-infos/` | Compact progress information displayed during flashing |
+| `settings/` | Application settings modal |
+| `progress-button/` | Animated button showing flash progress |
+| `target-selector/` | Drive target selection UI |
+| `safe-webview/` | Sandboxed webview for loading external content |
+| `svg-icon/` | Utility component for rendering inline SVG icons |
+
+### `lib/gui/app/models/` — State management
+
+| Module | Description |
+|---|---|
+| `flash-state.ts` | Tracks flash progress, results, and error state |
+| `selection-state.ts` | Manages selected image source and target drives |
+| `settings.ts` | Persists and reads user settings |
+| `available-drives.ts` | Maintains the list of connected, selectable drives |
+| `store.ts` | Redux store configuration |
+| `leds.ts` | Controls RGB LED feedback on supported hardware |
+
+### `lib/gui/app/modules/` — Application logic
+
+| Module | Description |
+|---|---|
+| `image-writer.ts` | Orchestrates the flash: sets state, calls the sidecar, handles results |
+| `api.ts` | Spawns the privileged sidecar and manages the WebSocket connection |
+| `analytics.ts` | Event tracking and analytics reporting |
+| `progress-status.ts` | Computes human-readable status strings from raw progress data |
+| `exception-reporter.ts` | Sentry-based error reporting |
+
+### `lib/shared/` — Shared utilities
+
+Code in this directory is used by both the renderer and the sidecar:
+
+| Module | Description |
+|---|---|
+| `drive-constraints.ts` | Rules for determining whether a drive is a safe write target |
+| `errors.ts` | Error construction and serialization helpers |
+| `supported-formats.ts` | List of supported image file extensions (`.img`, `.iso`, `.zip`, `.gz`, `.xz`, and more) |
+| `permissions.ts` | Privilege-checking utilities |
+| `messages.ts` | User-facing error and status message strings |
+| `units.ts` | Size and unit conversion helpers |
+| `exit-codes.ts` | Standardized process exit codes |

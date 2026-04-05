@@ -1,0 +1,46 @@
+---
+title: "Windows Troubleshooting"
+description: "Solutions for common issues when running Etcher on Windows, including flashing Windows ISOs, getting debug logs, and reporting bugs."
+---
+
+## Supported Windows versions
+
+Etcher supports **Windows 10 and later** on Intel 64-bit systems.
+
+## Flashing Windows images
+
+Etcher copies images byte by byte without transforming the data, so Windows ISO files cannot be flashed directly to a USB drive to produce a bootable Windows installer. Attempting to flash a Windows ISO with Etcher will result in a drive that does not boot.
+
+Use one of the following tools to create a bootable Windows USB drive:
+
+- **[Windows USB/DVD Download Tool](https://www.microsoft.com/en-us/download/windows-usb-dvd-download-tool)** — the official Microsoft tool for creating Windows installation media.
+- **[Rufus](https://rufus.akeo.ie)** — a free, open-source tool with support for a wide range of Windows versions and partition schemes.
+- **[WoeUSB](https://github.com/slacka/WoeUSB)** — an open-source option available on Linux for creating Windows USB drives.
+
+### Windows 10 IoT
+
+For Windows 10 IoT images specifically, use the [Windows 10 IoT Core Dashboard](https://developer.microsoft.com/en-us/windows/iot/downloads) instead.
+
+## Getting debug logs
+
+If you need to report a bug or investigate unexpected behavior, open the built-in DevTools console to collect log output.
+
+Press `Ctrl+Shift+I` while Etcher is open. This opens the Chromium DevTools panel. Check the **Console** tab for error messages and warnings.
+
+<Tip>
+  Copy the relevant log output and include it in your GitHub issue or forum post to help the team diagnose the problem more quickly.
+</Tip>
+
+## WinUSB driver
+
+Etcher optionally uses the `winusb-driver-generator` package to handle certain USB drive interactions on Windows. If you experience issues with a specific USB device not being recognized, check that your system's USB drivers are up to date.
+
+## Reporting issues
+
+When filing a bug report on the [Etcher GitHub issue tracker](https://github.com/balena-io/etcher/issues), include the following:
+
+- The Windows version you are running (for example, Windows 11 23H2)
+- The Etcher version (visible in the Etcher window)
+- Relevant log output from DevTools (`Ctrl+Shift+I` → Console tab)
+
+Search existing issues before opening a new one to avoid duplicates.

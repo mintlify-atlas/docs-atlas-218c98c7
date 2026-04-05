@@ -1,0 +1,91 @@
+---
+title: "Testing"
+description: "Run end-to-end tests with WebdriverIO, lint your code, and understand what can and can't be tested in Etcher."
+---
+
+Etcher uses [WebdriverIO](https://webdriver.io) with the `wdio-electron-service` to run end-to-end tests against the real Electron application.
+
+## Running the test suite
+
+```bash
+npm run wdio
+```
+
+On Linux, this command wraps the test runner with `xvfb-maybe` so the Electron window is rendered in a virtual framebuffer — allowing the tests to run headlessly in CI without a display server.
+
+The test specs live in `tests/**/*.spec.ts` and are run by the Mocha framework inside WebdriverIO.
+
+<Note>
+  `npm test` is a no-op in this project. Use `npm run wdio` to run tests locally.
+</Note>
+
+## What is and isn't tested
+
+Given the nature of Etcher, some behaviors cannot be covered by automated tests:
+
+**Cannot be unit tested:**
+- Writing to real raw block devices — the actual write operation requires physical hardware
+- Platform inconsistencies — behavior that only manifests on specific OS versions or hardware configurations
+- Style changes — visual regressions are evaluated manually
+- Artwork and assets
+
+**Can be tested:**
+- Application startup and window rendering
+- UI component interactions (drive selection, source selection)
+- State transitions and logic in models and modules
+
+We encourage you to test your changes manually on as many operating systems as possible before sending a pull request.
+
+## CI
+
+The test suite runs automatically on every pull request. The CI pipeline:
+
+- Installs dependencies
+- Runs the linter
+- Executes the WebdriverIO test suite
+
+All checks must pass before a pull request can be merged.
+
+## Linting
+
+Etcher enforces code style with [Prettier](https://prettier.io) and [`@balena/lint`](https://github.com/balena-io/balena-lint).
+
+**Check for lint errors:**
+
+```bash
+npm run lint
+```
+
+This runs `prettier` and `balena-lint`, then checks for uncommitted file changes using `catch-uncommitted`.
+
+**Auto-fix lint issues:**
+
+```bash
+npm run prettify
+```
+
+This formats CSS files with Prettier and fixes TypeScript files with `balena-lint --fix`.
+
+<Tip>
+  Run `npm run prettify` before committing to avoid lint failures in CI.
+</Tip>
+
+## Pre-commit hook
+
+Etcher uses [Husky](https://typicode.github.io/husky) to run `npm run prettify` automatically as a pre-commit hook. This ensures that all committed code is consistently formatted without any manual step.
+
+The hook is configured in `package.json`:
+
+```json
+{
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run prettify"
+    }
+  }
+}
+```
+
+## EditorConfig
+
+The project ships an [EditorConfig](https://editorconfig.org) file that communicates indentation style, line endings, and other text formatting defaults to your editor. Install the EditorConfig plugin for your editor to have these settings applied automatically and avoid formatting-related review comments.

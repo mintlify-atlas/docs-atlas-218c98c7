@@ -1,0 +1,125 @@
+---
+title: "Commit Guidelines"
+description: "How to write commit messages for Etcher, including format, semver types, and footer tags."
+---
+
+Etcher enforces a structured commit message format to support automated changelog generation, correct semver version bumps, and a readable project history.
+
+## Goals
+
+Structured commits let the project:
+
+- Auto-generate `CHANGELOG.md` without manual intervention
+- Automatically increment the semver version based on the nature of each change
+- Give a quick overview of the project history at a glance
+- Automatically reference relevant changes when upgrading a dependency
+
+## Commit message format
+
+Every commit must specify a semver change type. You can do this in one of two ways:
+
+**Inline prefix** — put the type directly in the subject line:
+
+```
+<semver-type>: <subject>
+```
+
+**Footer tag** — write the subject first, then add the type in the commit body:
+
+```
+<subject>
+
+<details>
+
+Change-Type: <semver-type>
+```
+
+The subject line must not exceed **70 characters** (including the type prefix). Wrap any body text at **72 characters**.
+
+### Semver types
+
+| Type | When to use |
+|------|-------------|
+| `patch` | Bug fixes, minor corrections, and other backwards-compatible changes that don't add features |
+| `minor` | New backwards-compatible features or improvements |
+| `major` | Breaking changes that are not backwards-compatible |
+
+See the [Semantic Versioning specification](http://semver.org) for a full explanation of these types.
+
+### Examples
+
+<CodeGroup>
+
+```text Good — inline type
+patch: fix crash when ejecting drive on Windows
+```
+
+```text Good — footer tag
+fix crash when ejecting drive on Windows
+
+The eject call was not awaited, causing a race condition
+with the cleanup handler.
+
+Change-Type: patch
+```
+
+```text Bad — no semver type
+fix the crash
+```
+
+```text Bad — subject too long
+patch: fix the crash that happened when the user tried to eject the drive on Windows before writing finished
+```
+
+</CodeGroup>
+
+## Footer tags
+
+Footer tags appear at the bottom of the commit body and provide structured metadata.
+
+### `See:` / `Link:`
+
+Reference a related resource. You can repeat this tag multiple times in a single commit.
+
+Suitable resources include:
+
+- Pull request URLs
+- GitHub issue URLs
+- Relevant external documentation
+- Full commit hashes (use the complete hash, not a short form)
+
+For commits of type `upgrade`, you **should** include a `See:` tag linking to the dependency's changelog for the range of versions being upgraded.
+
+```text
+See: https://github.com/balena-io/etcher/issues/1234
+See: 49d89b4acebd80838303b011d30517cd6229fdbe
+Link: https://github.com/some-dep/some-dep/blob/master/CHANGELOG.md
+```
+
+<Tip>
+Use absolute URLs rather than relative paths or bare issue IDs. Absolute URLs remain readable when browsing history outside the GitHub web interface.
+</Tip>
+
+### `Closes:` / `Fixes:`
+
+Automatically close a GitHub issue when the commit is merged into the default branch.
+
+```text
+Closes: https://github.com/balena-io/etcher/issues/3456
+Fixes: https://github.com/balena-io/etcher/issues/3457
+```
+
+A single commit can include multiple `Closes:` or `Fixes:` tags.
+
+## Full commit example
+
+```text
+minor: add support for flashing directly from a URL
+
+Users can now paste an image URL into Etcher and it will
+be downloaded and flashed without saving to disk first.
+
+Change-Type: minor
+Closes: https://github.com/balena-io/etcher/issues/2000
+See: https://github.com/balena-io/etcher/pull/2100
+```

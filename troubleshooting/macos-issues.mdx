@@ -1,0 +1,44 @@
+---
+title: "macOS Troubleshooting"
+description: "Solutions for common issues when running Etcher on macOS, including version requirements and Gatekeeper."
+---
+
+## Supported macOS versions
+
+Etcher supports **macOS 10.13 (High Sierra) and later** on both Intel and Apple Silicon Macs.
+
+Etcher is built on the [Electron](https://electronjs.org/) framework, which sets the minimum supported macOS version. Older versions of macOS are not supported because the underlying framework cannot run on them.
+
+<Note>
+  If you are running an older version of macOS, you will need to upgrade your operating system to use a current release of Etcher.
+</Note>
+
+## macOS Gatekeeper blocks the app on first launch
+
+macOS Gatekeeper may prevent Etcher from opening if it was downloaded from outside the Mac App Store. You may see a message such as:
+
+> "Etcher" cannot be opened because the developer cannot be verified.
+
+To open Etcher anyway:
+
+<Steps>
+  <Step title="Locate Etcher in Finder">
+    Open Finder and navigate to the folder where you saved the Etcher `.dmg` or the extracted app.
+  </Step>
+  <Step title="Right-click and open">
+    Right-click (or Control-click) the Etcher app icon and select **Open** from the context menu.
+  </Step>
+  <Step title="Confirm in the dialog">
+    A dialog will appear asking if you are sure you want to open the app. Click **Open** to confirm.
+  </Step>
+</Steps>
+
+You only need to do this once. After the first time you open Etcher this way, macOS will remember your choice and you can launch it normally in the future.
+
+## Reporting issues
+
+When filing a bug report on the [Etcher GitHub issue tracker](https://github.com/balena-io/etcher/issues), include the following to help the team reproduce and diagnose the problem:
+
+- The macOS version you are running (for example, macOS 14.4 Sonoma)
+- The Etcher version (visible in the Etcher window or in **About Etcher**)
+- Relevant log output from DevTools, which you can open with `Cmd+Alt+I`

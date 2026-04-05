@@ -1,0 +1,67 @@
+---
+title: "Contributing to Etcher"
+description: "Learn how to contribute to Etcher — an open-source desktop application for flashing OS images to SD cards and USB drives."
+---
+
+Etcher is an open-source project maintained by [Balena](https://balena.io) and welcomes contributions from the community. Whether you want to fix a bug, add a feature, improve documentation, or report an issue, this guide will help you get started.
+
+## Ways to contribute
+
+<CardGroup cols={2}>
+  <Card title="Report a bug" icon="bug" href="https://github.com/balena-io/etcher/issues/new">
+    Found something that doesn't work? Open an issue on GitHub with steps to reproduce, your OS version, and any relevant logs.
+  </Card>
+  <Card title="Request a feature" icon="lightbulb" href="https://github.com/balena-io/etcher/issues/new">
+    Have an idea for an improvement? Open an issue describing the use case and the behavior you'd like to see.
+  </Card>
+  <Card title="Contribute code" icon="code" href="/contributing/setup">
+    Fix a bug or implement a feature. Read the setup guide to get a local development environment running, then submit a pull request.
+  </Card>
+  <Card title="Improve documentation" icon="book-open" href="https://github.com/balena-io/etcher">
+    Help make the project easier to understand. Documentation improvements are always welcome and a great way to make your first contribution.
+  </Card>
+</CardGroup>
+
+## Before you start
+
+Read through these pages to understand how the project is structured and how to work with it effectively:
+
+<CardGroup cols={3}>
+  <Card title="Architecture" icon="sitemap" href="/contributing/architecture">
+    Understand how Etcher's Electron main process, renderer, and privileged sidecar fit together.
+  </Card>
+  <Card title="Development setup" icon="wrench" href="/contributing/setup">
+    Install prerequisites and get the application running locally on Windows, macOS, or Linux.
+  </Card>
+  <Card title="Testing" icon="flask" href="/contributing/testing">
+    Learn how to run end-to-end tests with WebdriverIO and lint your code before opening a pull request.
+  </Card>
+</CardGroup>
+
+## Pull request guidelines
+
+When you're ready to submit a pull request, keep the following in mind:
+
+- Write a concise commit message explaining your changes.
+- Mention the operating systems and versions you tested on.
+- If your change affects the UI, attach a screenshot.
+- Reference the issue your pull request fixes so it closes automatically on merge.
+- Squash commits where possible, especially when addressing review feedback.
+
+Before your pull request can be merged:
+
+- The linter must pass with no warnings (`npm run lint`).
+- All tests must pass.
+- Your code must follow the project's conventions.
+- Changes must be confirmed to work on recent versions of the supported operating systems.
+
+## Code of conduct
+
+This project is maintained by Balena and asks all contributors to be respectful and constructive in all interactions. If you have concerns about conduct in the project, reach out via the [Etcher forum](https://forums.balena.io/c/etcher) or the [GitHub issue tracker](https://github.com/balena-io/etcher/issues).
+
+## Quick links
+
+- [GitHub repository](https://github.com/balena-io/etcher)
+- [Issue tracker](https://github.com/balena-io/etcher/issues)
+- [Releases](https://github.com/balena-io/etcher/releases)
+- [Commit guidelines](https://github.com/balena-io/etcher/blob/master/docs/COMMIT-GUIDELINES.md)

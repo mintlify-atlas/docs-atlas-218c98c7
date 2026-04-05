@@ -1,0 +1,121 @@
+---
+title: "Submitting Pull Requests"
+description: "Guidelines for opening pull requests against Etcher, including what to include and what must pass before merging."
+---
+
+Before opening a pull request, make sure you've read the [commit guidelines](/contributing/commit-guidelines) and run the test suite locally.
+
+## What to include in your PR
+
+When you send a pull request, follow these guidelines to help reviewers understand and merge your changes quickly.
+
+<Steps>
+  <Step title="Write a concise commit message">
+    Summarise what changed and why in the subject line. Follow the [commit guidelines](/contributing/commit-guidelines) format, including a semver type (`patch`, `minor`, or `major`).
+  </Step>
+  <Step title="Add a descriptive body when needed">
+    If the change is non-trivial, add context in the commit body. Explain the problem being solved and any trade-offs or alternatives you considered.
+  </Step>
+  <Step title="State which operating systems you tested on">
+    Mention the OS and version (for example, "Tested on macOS 14.4, Ubuntu 22.04, and Windows 11"). Not everything can be covered by automated tests, so manual verification is important.
+  </Step>
+  <Step title="Attach screenshots for visual changes">
+    If your PR affects the UI or any visual part of the application, include before/after screenshots in the PR description.
+  </Step>
+  <Step title="Reference the issue your PR fixes">
+    Link to the issue using `Closes:` or `Fixes:` in the commit footer so GitHub closes it automatically on merge.
+
+    ```text
+    Closes: https://github.com/balena-io/etcher/issues/1234
+    ```
+  </Step>
+  <Step title="Write a descriptive PR title">
+    The PR title should match your commit subject and give reviewers a clear idea of what changed without having to read the diff.
+  </Step>
+  <Step title="Squash commits when possible">
+    If you made several commits to address review feedback, squash them into a single logical commit before merging. This keeps the project history clean and ensures the changelog is generated correctly.
+  </Step>
+</Steps>
+
+## Acceptance requirements
+
+Your pull request will not be merged until all of the following conditions are met:
+
+<AccordionGroup>
+  <Accordion title="Linter passes with no warnings">
+    Run the linter before pushing:
+
+    ```bash
+    npm run lint
+    ```
+
+    The CI pipeline also runs the linter automatically. Any warnings or errors will block the merge.
+  </Accordion>
+  <Accordion title="All tests pass">
+    The test suite runs automatically on the CI servers when you open or update a pull request. You can also run it locally:
+
+    ```bash
+    npm run wdio
+    ```
+
+    <Note>
+    Some things cannot be unit tested — raw device writes, platform-specific behaviour, visual changes, and artwork. The CI suite is not a substitute for manual testing on real hardware.
+    </Note>
+  </Accordion>
+  <Accordion title="Coding style matches project conventions">
+    Etcher uses [EditorConfig](http://editorconfig.org) to define indentation, line endings, and other editor defaults. Install the EditorConfig plugin for your editor to automatically apply the correct settings and avoid style issues during review.
+  </Accordion>
+  <Accordion title="Changes confirmed working on supported operating systems">
+    We encourage contributors to test on as many supported OS versions as possible. The CI covers a fixed matrix, but regressions on specific platforms can slip through without manual verification.
+  </Accordion>
+</AccordionGroup>
+
+## Updating a dependency
+
+When you need to bump a package version:
+
+<Steps>
+  <Step title="Install the new version with npm">
+    ```bash
+    npm install <package>@<version>
+    ```
+  </Step>
+  <Step title="Commit both lockfiles">
+    Commit `package.json` **and** `npm-shrinkwrap.json` together in the same commit. Never commit one without the other.
+
+    ```bash
+    git add package.json npm-shrinkwrap.json
+    git commit -m "patch: upgrade <package> to <version>
+
+    Change-Type: patch
+    See: https://github.com/<org>/<package>/blob/master/CHANGELOG.md"
+    ```
+  </Step>
+</Steps>
+
+## Diffing binary files
+
+Binary files in the repository are tagged with `diff=hex` in `.gitattributes`. To get human-readable hexdump-style diffs for binaries, configure git as follows:
+
+<Tabs>
+  <Tab title="Repository-local">
+    ```bash
+    git config diff.hex.textconv hexdump
+    git config diff.hex.binary true
+    ```
+  </Tab>
+  <Tab title="Global">
+    ```bash
+    git config --global diff.hex.textconv hexdump
+    git config --global diff.hex.binary true
+    ```
+  </Tab>
+</Tabs>
+
+<Tip>
+If `hexdump` is not available on your platform, [hxd](https://github.com/jhermsmeier/hxd) is a compatible alternative that is also faster.
+</Tip>
+
+---
+
+If you have any questions or need help, don't hesitate to open a discussion or reach out on the [Etcher forum](https://forums.balena.io/c/etcher).

@@ -1,0 +1,83 @@
+---
+title: "Supported formats"
+description: "Every image format Etcher accepts, how compressed formats are handled, and recommendations for common use cases."
+---
+
+## Supported extensions
+
+Etcher accepts the following file extensions:
+
+| Extension | Description |
+|-----------|-------------|
+| `.bin` | Raw binary image |
+| `.bz2` | bzip2-compressed image |
+| `.dmg` | Apple Disk Image |
+| `.dsk` | Generic disk image |
+| `.etch` | Etcher-specific image format |
+| `.gz` | gzip-compressed image |
+| `.hddimg` | Yocto hard disk image |
+| `.img` | Raw disk image |
+| `.iso` | ISO 9660 optical disc image |
+| `.raw` | Raw disk image |
+| `.rpi-sdimg` | Raspberry Pi SD card image |
+| `.sdcard` | SD card image |
+| `.vhd` | Virtual Hard Disk image |
+| `.wic` | Yocto Wic image |
+| `.xz` | xz/LZMA-compressed image |
+| `.zip` | ZIP-archived image |
+
+## Compressed formats
+
+Etcher natively decompresses `.gz`, `.bz2`, `.xz`, and `.zip` archives during the flash. You do not need to extract the image manually before flashing.
+
+When you select a compressed file, Etcher reads the compressed size from the file and shows the uncompressed size once it can determine it. The decompression happens in the write pipeline — data flows from the file, through the decompressor, and onto the drive in a single pass.
+
+<Note>
+  The `decompressFirst` setting controls whether Etcher fully decompresses the image to a temporary location before writing, or streams the decompression and write together. With `decompressFirst` enabled (the default), the image is decompressed first, which can be faster on slow drives but requires additional disk space equal to the uncompressed image size.
+</Note>
+
+### ZIP archives
+
+A `.zip` file must contain exactly one image file at its root. Etcher extracts and flashes the first image it finds inside the archive.
+
+## Windows images
+
+Etcher detects filenames that appear to be Windows installation media by checking whether the filename contains `windows`, `win7`, `win8`, `win10`, or `winxp` (case-insensitive). When a match is found, Etcher displays a warning before flashing.
+
+<Warning>
+  Windows installation images require special treatment to produce a bootable drive and **do not work out of the box** with a raw byte-for-byte copy. Etcher writes the data as-is; the resulting drive will not be bootable.
+
+  To create bootable Windows installation media, use one of the following tools instead:
+  - [Rufus](https://rufus.akeo.ie) (Windows)
+  - [Windows USB/DVD Download Tool](https://www.microsoft.com/en-us/download/windows-usb-dvd-download-tool) (Windows)
+  - [WoeUSB](https://github.com/slacka/WoeUSB) (Linux)
+
+  Windows 10 IoT images should be flashed with the [Windows 10 IoT Core Dashboard](https://developer.microsoft.com/en-us/windows/iot/downloads).
+</Warning>
+
+## Recommended formats by use case
+
+<CardGroup cols={2}>
+  <Card title="Raspberry Pi" icon="microchip">
+    Use `.img` or `.zip`. The Raspberry Pi Foundation distributes images as `.img.xz` or `.zip`-wrapped `.img` files. Etcher handles both without any manual extraction.
+  </Card>
+  <Card title="Linux distributions" icon="linux">
+    Use `.iso`. Most desktop Linux distributions (Ubuntu, Fedora, Debian, etc.) publish standard ISO images that Etcher writes directly to a USB drive.
+  </Card>
+  <Card title="Custom embedded Linux" icon="server">
+    Use `.wic` or `.hddimg`. Yocto-based build systems output these formats, which include full partition tables and are ready to flash directly.
+  </Card>
+  <Card title="macOS" icon="apple">
+    Use `.dmg`. Apple Disk Images are supported and written byte for byte. Note that macOS installer `.dmg` files may not produce a bootable USB — check the image publisher's instructions.
+  </Card>
+</CardGroup>
+
+## Ubuntu ISOs
+
+Ubuntu images have a hybrid format that allows them to boot from both optical discs and USB drives without modification. After flashing, some tools such as `parted` may report warnings about the partition table:
+
+> `/dev/xxx` contains GPT signatures, indicating that it has a GPT table. However, it does not have a valid fake msdos partition table...
+
+> Warning: The driver descriptor says the physical block size is 2048 bytes, but Linux says it is 512 bytes.
+
+These warnings are safe to ignore. The drive boots correctly despite the unusual partition table layout.

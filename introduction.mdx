@@ -1,0 +1,56 @@
+---
+title: "Introduction"
+description: "Etcher is a free, open-source desktop application that flashes OS images to SD cards and USB drives safely and reliably."
+---
+
+Etcher is a powerful OS image flasher built with web technologies to ensure flashing an SD card or USB drive is a pleasant and safe experience. Whether you're setting up a Raspberry Pi, deploying a custom Linux distro, or writing a bootable drive, Etcher handles the full process — writing and verifying — without putting your existing data at risk.
+
+## What problem does Etcher solve?
+
+Flashing OS images to removable drives is a task that's easy to get wrong. One misclick can overwrite the wrong drive, and a bad write can produce a drive that appears full but fails to boot. Etcher eliminates both problems:
+
+- It **filters out system drives** so you can never accidentally erase your hard drive.
+- It **verifies every byte** after writing, so you know the image was transferred correctly before you boot from the drive.
+
+The result is a three-step workflow — select image, select drive, flash — that works the same way on every supported platform.
+
+## Key features
+
+**Safe flashing** — Etcher automatically detects and hides your system drives. Only removable, writable drives appear as targets, protecting your data from accidental overwrites.
+
+**Write verification** — After every flash, Etcher reads the drive back and confirms that every byte matches the source image. If verification fails, you'll know before you walk away.
+
+**Cross-platform** — Etcher runs on Windows, macOS, and Linux with an identical interface on each platform. You learn it once and use it everywhere.
+
+**Wide format support** — Flash ISO, IMG, DMG, VHD, and many other image formats directly without conversion.
+
+**Auto-decompression** — Flash compressed images directly. Etcher decompresses ZIP, GZ, BZ2, and XZ archives on the fly, so you never need to extract an image before flashing.
+
+**Multi-drive flashing** — Write the same image to multiple drives simultaneously in a single operation. Useful for provisioning batches of devices.
+
+**Flash from URL** — Provide a URL and Etcher downloads and flashes the image directly, without requiring a manual download step.
+
+## Supported operating systems
+
+| Platform | Requirement |
+|----------|-------------|
+| Linux | Most distros, Intel 64-bit |
+| Windows | Windows 10 or later, Intel 64-bit |
+| macOS | macOS 10.13 (High Sierra) or later, Intel and Apple Silicon |
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Download and install Etcher on Windows, macOS, or Linux.
+  </Card>
+  <Card title="Quick start" icon="rocket" href="/quickstart">
+    Flash your first image in a few steps.
+  </Card>
+  <Card title="Supported formats" icon="file-archive" href="/guides/supported-formats">
+    See all the image formats Etcher can flash.
+  </Card>
+  <Card title="Multi-drive flashing" icon="copy" href="/guides/multi-drive-flashing">
+    Write to multiple drives at the same time.
+  </Card>
+</CardGroup>

@@ -1,0 +1,145 @@
+---
+title: "Installation"
+description: "Download and install Etcher on Windows, macOS, or Linux."
+---
+
+Etcher is available as a native installer for all supported platforms. Download the latest version from [balena.io/etcher](https://balena.io/etcher) or install it through a package manager.
+
+## System requirements
+
+| Platform | Requirement |
+|----------|-------------|
+| Windows | Windows 10 or later, Intel 64-bit |
+| macOS | macOS 10.13 (High Sierra) or later, Intel and Apple Silicon |
+| Linux | Most distros, Intel 64-bit |
+
+## Install Etcher
+
+<Tabs>
+  <Tab title="Windows">
+    ### WinGet
+
+    WinGet is built into Windows 10 and later. Open a terminal and run:
+
+    ```bash
+    winget install balenaEtcher
+    ```
+
+    The package is kept up to date automatically via GitHub Actions.
+
+    **Uninstall:**
+
+    ```bash
+    winget uninstall balenaEtcher
+    ```
+
+    ---
+
+    ### Chocolatey
+
+    If you use [Chocolatey](https://chocolatey.org), run:
+
+    ```bash
+    choco install etcher
+    ```
+
+    **Uninstall:**
+
+    ```bash
+    choco uninstall etcher
+    ```
+
+    ---
+
+    ### Direct download
+
+    1. Go to [balena.io/etcher](https://balena.io/etcher).
+    2. Download the Windows installer (`.exe`).
+    3. Run the installer and follow the on-screen prompts.
+
+    <Note>
+      Windows may show a SmartScreen prompt for unsigned installers. Click **More info** then **Run anyway** to proceed.
+    </Note>
+  </Tab>
+
+  <Tab title="macOS">
+    ### Direct download
+
+    1. Go to [balena.io/etcher](https://balena.io/etcher).
+    2. Download the macOS disk image (`.dmg`).
+    3. Open the `.dmg` file and drag **balenaEtcher** into your **Applications** folder.
+    4. Launch Etcher from Applications or Spotlight.
+
+    Etcher runs natively on both Intel Macs and Apple Silicon (M-series) Macs.
+
+    <Note>
+      macOS may display a Gatekeeper warning the first time you open Etcher. Right-click the app, choose **Open**, then confirm in the dialog that appears.
+    </Note>
+
+    **Uninstall:**
+
+    Drag **balenaEtcher** from your Applications folder to the Trash.
+  </Tab>
+
+  <Tab title="Linux">
+    ### Debian and Ubuntu
+
+    1. Download the `.deb` package from the [GitHub releases page](https://github.com/balena-io/etcher/releases).
+    2. Install it with `apt`:
+
+    ```bash
+    sudo apt install ./balena-etcher_******_amd64.deb
+    ```
+
+    Replace `******` with the version number from the downloaded file.
+
+    **Uninstall:**
+
+    ```bash
+    sudo apt remove balena-etcher
+    ```
+
+    ---
+
+    ### Fedora and RHEL
+
+    1. Download the `.rpm` package from the [GitHub releases page](https://github.com/balena-io/etcher/releases).
+    2. Install it with `yum`:
+
+    ```bash
+    sudo yum localinstall balena-etcher-***.x86_64.rpm
+    ```
+
+    Replace `***` with the version number from the downloaded file.
+
+    **Uninstall:**
+
+    ```bash
+    sudo yum remove balena-etcher
+    ```
+
+    ---
+
+    ### Arch and Manjaro (AUR)
+
+    Etcher is available in the [Arch User Repository](https://aur.archlinux.org/packages/balena-etcher/). Install it with your AUR helper:
+
+    ```bash
+    yay -S balena-etcher
+    ```
+
+    **Uninstall:**
+
+    ```bash
+    yay -R balena-etcher
+    ```
+
+    <Note>
+      On Linux, Etcher requires a [polkit authentication agent](https://wiki.archlinux.org/index.php/Polkit#Authentication_agents) to request elevated privileges when writing to drives. Most desktop environments include one by default.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Next steps
+
+Once Etcher is installed, follow the [Quick Start](/quickstart) guide to flash your first image.

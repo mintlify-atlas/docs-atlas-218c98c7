@@ -1,0 +1,115 @@
+---
+title: "Development setup"
+description: "Set up a local development environment for Etcher on Windows, macOS, or Linux."
+---
+
+This page walks you through cloning the Etcher repository, installing dependencies, and running the application locally.
+
+## Prerequisites
+
+### Common requirements
+
+You need the following tools installed on all platforms:
+
+- **Node.js** `>=20 <21` — the version range is enforced by the project's `engines` field in `package.json`
+- **Python 3**
+- **npm**
+
+After installing Python, install the project's Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+<Note>
+  You may need to run this with `sudo` on macOS/Linux, or from an elevated command prompt on Windows.
+</Note>
+
+### Platform-specific requirements
+
+<Tabs>
+  <Tab title="Windows">
+    Install each of the following before continuing:
+
+    - [NSIS v2.51](http://nsis.sourceforge.net/Main_Page) — the installer builder. Version 3.x is not compatible.
+    - One of the following C++ build toolchains:
+      - [Visual C++ 2019 Build Tools](https://visualstudio.microsoft.com/vs/features/cplusplus/) — standalone compilers, libraries, and scripts
+      - [Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/) (or Professional/Enterprise) — **note:** Visual Studio does not install C++ by default. Run the setup again, select **Modify**, and check **Visual C++ → Common Tools for Visual C++**
+    - [MinGW](http://www.mingw.org) with the following packages:
+      - `msys-make`
+      - `msys-unzip`
+      - `msys-zip`
+      - `msys-bash`
+      - `msys-coreutils`
+
+    If node-gyp does not detect your Visual Studio version, set it explicitly:
+
+    ```bash
+    npm config set msvs_version 2019
+    ```
+  </Tab>
+  <Tab title="macOS">
+    Install the full [Xcode](https://developer.apple.com/xcode/) application from the Mac App Store.
+
+    <Warning>
+      Xcode Command Line Tools alone are not sufficient. You must install the full Xcode application.
+    </Warning>
+  </Tab>
+  <Tab title="Linux">
+    Install `libudev-dev` to satisfy the libusb dependency:
+
+    ```bash
+    # Debian / Ubuntu
+    sudo apt install libudev-dev
+
+    # Fedora / RHEL
+    sudo dnf install systemd-devel
+    ```
+  </Tab>
+</Tabs>
+
+## Setting up the project
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the repo with the `--recursive` flag to also fetch submodules:
+
+    ```bash
+    git clone --recursive https://github.com/balena-io/etcher
+    cd etcher
+    ```
+  </Step>
+  <Step title="Install dependencies">
+    Install all Node.js dependencies using npm:
+
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Start the application">
+    Build and launch the Electron app in development mode using `electron-forge`:
+
+    ```bash
+    npm start
+    ```
+
+    This runs `electron-forge start`, which compiles the app with webpack and opens the Electron window.
+  </Step>
+</Steps>
+
+## Build and package
+
+To build distributable artifacts, use the following commands:
+
+| Command | Description |
+|---|---|
+| `npm run make` | Compile the app and produce platform-specific installers (`.deb`, `.rpm`, `.dmg`, `.exe`) |
+| `npm run package` | Package the app without creating installers |
+
+<Tip>
+  Run `npm run make` to verify your changes build cleanly before opening a pull request.
+</Tip>
+
+## Updating dependencies
+
+When you update a dependency, commit both `package.json` and `npm-shrinkwrap.json` together in the same commit. Etcher uses a shrinkwrap file to pin the full dependency tree.

@@ -1,0 +1,123 @@
+---
+title: "Configuration"
+description: "Configure Etcher's behaviour using the config.json file, including error reporting, auto-updates, notifications, and flash options."
+---
+
+## Config file location
+
+Etcher stores its configuration in a `config.json` file in the application's user data directory. The location depends on your operating system:
+
+<Tabs>
+  <Tab title="Windows">
+    ```
+    %APPDATA%\etcher\config.json
+    ```
+
+    For example: `C:\Users\YourName\AppData\Roaming\etcher\config.json`
+  </Tab>
+  <Tab title="macOS">
+    ```
+    ~/Library/Application Support/etcher/config.json
+    ```
+  </Tab>
+  <Tab title="Linux">
+    ```bash
+    # If XDG_CONFIG_HOME is set:
+    $XDG_CONFIG_HOME/etcher/config.json
+
+    # Default fallback:
+    ~/.config/etcher/config.json
+    ```
+  </Tab>
+</Tabs>
+
+You can edit `config.json` with any text editor before or while Etcher is closed. Etcher reads the file at startup, so changes take effect the next time you launch the application.
+
+<Note>
+  The file may not exist until you launch Etcher at least once, or until you change a setting through the UI. If it does not exist, Etcher uses the defaults described below.
+</Note>
+
+## Settings reference
+
+### `errorReporting`
+
+**Type:** boolean  
+**Default:** `true`
+
+When enabled, Etcher sends anonymous crash reports and error data to help the development team identify and fix bugs. No personally identifiable information is included.
+
+Set to `false` to opt out of error reporting entirely.
+
+---
+
+### `updatesEnabled`
+
+**Type:** boolean  
+**Default:** `true` for AppImage, NSIS (Windows installer), and DMG packages; `false` for other package types
+
+Controls whether Etcher checks for and applies updates automatically. This setting is only active when Etcher is distributed in a package format that supports auto-update (AppImage on Linux, NSIS installer on Windows, DMG on macOS). Builds installed through a system package manager typically manage updates through that package manager instead.
+
+Set to `false` to disable automatic update checks.
+
+---
+
+### `desktopNotifications`
+
+**Type:** boolean  
+**Default:** `true`
+
+When enabled, Etcher sends an OS-level desktop notification when a flash operation completes — whether it succeeds or fails. This is useful when flashing large images where you want to step away and be notified when the drive is ready.
+
+On Linux, desktop notifications require `libnotify` to be installed.
+
+Set to `false` to suppress these notifications.
+
+---
+
+### `autoBlockmapping`
+
+**Type:** boolean  
+**Default:** `true`
+
+Block mapping skips empty (zero-filled) regions of the image when writing. Instead of writing every block sequentially, Etcher only writes the blocks that contain actual data. This reduces the total amount of data written and can significantly speed up flashing for images with large unused regions.
+
+Set to `false` to disable block mapping and write every block, including empty ones. This may be useful for debugging or when a specific image behaves unexpectedly with block mapping enabled.
+
+---
+
+### `decompressFirst`
+
+**Type:** boolean  
+**Default:** `true`
+
+Controls how compressed images are handled before flashing.
+
+- **`true` (default):** Etcher fully decompresses the image to a temporary location before writing. This requires free disk space equal to the uncompressed image size, but can be faster because the write process reads from already-decompressed data.
+- **`false`:** Etcher streams decompression and writing together in a single pass. No extra disk space is needed, but combined CPU and I/O load may reduce throughput on slower systems.
+
+---
+
+## Example config.json
+
+The following file sets all options explicitly with their default values:
+
+```json
+{
+  "errorReporting": true,
+  "updatesEnabled": true,
+  "desktopNotifications": true,
+  "autoBlockmapping": true,
+  "decompressFirst": true
+}
+```
+
+To disable error reporting and automatic updates while keeping everything else at the default:
+
+```json
+{
+  "errorReporting": false,
+  "updatesEnabled": false
+}
+```
+
+You only need to include the settings you want to change. Omitted settings fall back to their defaults.

@@ -1,0 +1,122 @@
+---
+title: "Recovering a Broken Drive"
+description: "How to recover a drive that ended up in a bad state after a failed or interrupted flash."
+---
+
+If a flash fails or is interrupted partway through, your drive may end up in a state that your operating system cannot read, and graphical disk tools may refuse to repair it. The steps below show how to completely erase the drive and restore it to a usable state on each platform.
+
+<Warning>
+  The commands on this page are destructive. They erase all data on the selected drive. Make sure you select the correct drive before running any command.
+</Warning>
+
+<Tabs>
+  <Tab title="Windows">
+    Windows includes `diskpart`, a command-line disk utility available on all modern Windows versions.
+
+    <Steps>
+      <Step title="Open cmd.exe">
+        Open `cmd.exe` from the Start menu or the **Run** dialog (press `Win+R`, type `cmd`, press Enter).
+      </Step>
+      <Step title="Launch diskpart">
+        Type `diskpart.exe` and press Enter. Windows will ask for administrator permissions and open a new prompt window. Run all remaining commands in that new window.
+      </Step>
+      <Step title="List available disks">
+        ```
+        list disk
+        ```
+        Note the number that identifies the drive you want to recover.
+      </Step>
+      <Step title="Select the disk">
+        ```
+        select disk N
+        ```
+        Replace `N` with the disk number from the previous step.
+      </Step>
+      <Step title="Clean the disk">
+        ```
+        clean
+        ```
+        This erases all existing partition and filesystem data from the drive.
+      </Step>
+      <Step title="Create a primary partition">
+        ```
+        create partition primary
+        ```
+      </Step>
+      <Step title="Mark the partition active">
+        ```
+        active
+        ```
+      </Step>
+      <Step title="List partitions and select the new one">
+        ```
+        list partition
+        ```
+        ```
+        select partition N
+        ```
+        Replace `N` with the partition number shown.
+      </Step>
+      <Step title="Format the partition">
+        ```
+        format override quick
+        ```
+        To choose a specific filesystem, add `FS=NTFS` or `FS=FAT32` before `override`. For example:
+        ```
+        format FS=FAT32 override quick
+        ```
+      </Step>
+      <Step title="Exit diskpart">
+        ```
+        exit
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="macOS">
+    Use the `diskutil` command in **Terminal.app**.
+
+    <Steps>
+      <Step title="Find the disk identifier">
+        Run the following to list all drives and find your disk's identifier (such as `disk2`):
+
+        ```bash
+        diskutil list
+        ```
+      </Step>
+      <Step title="Erase the disk">
+        Run the command below, replacing `N` with the disk number from the previous step:
+
+        ```bash
+        diskutil eraseDisk FAT32 UNTITLED MBRFormat /dev/diskN
+        ```
+
+        This formats the drive as FAT32 with an MBR partition table and labels it `UNTITLED`.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Linux">
+    Use `dd` to overwrite the drive's partition table with zeros.
+
+    <Steps>
+      <Step title="Unmount the drive">
+        Before writing to the drive, unmount it. Replace `xxx` with your actual device path (for example, `sdb`):
+
+        ```bash
+        umount /dev/xxx
+        ```
+      </Step>
+      <Step title="Zero out the partition table">
+        Run the following command as `root`, replacing `xxx` with your device path:
+
+        ```bash
+        dd if=/dev/zero of=/dev/xxx bs=512 count=1 conv=notrunc
+        ```
+
+        This overwrites the first 512 bytes of the drive (the MBR), erasing the partition table.
+      </Step>
+    </Steps>
+
+    After running this command, use your distribution's disk management tool or `fdisk`/`parted` to create a new partition table and format the drive.
+  </Tab>
+</Tabs>

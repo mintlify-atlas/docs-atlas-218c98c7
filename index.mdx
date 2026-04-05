@@ -1,97 +1,65 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Welcome to Etcher"
+description: "Flash OS images to SD cards and USB drives, safely and easily."
 ---
 
-## Setting up
+Etcher is a free, open-source desktop application that makes flashing OS images to SD cards and USB drives simple, safe, and reliable. Whether you're setting up a Raspberry Pi, installing a Linux distro, or deploying a custom OS image, Etcher handles it all with built-in verification to ensure every byte is written correctly.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Download and install Etcher on Windows, macOS, or Linux
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Flash your first image in three simple steps
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Supported Formats" icon="file-archive" href="/guides/supported-formats">
+    See all image formats Etcher can flash
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Troubleshooting" icon="wrench" href="/troubleshooting/faq">
+    Find answers to common questions and issues
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Why Etcher?
 
-Everything you need to create world-class documentation.
+<CardGroup cols={3}>
+  <Card title="Safe by default" icon="shield-check">
+    Etcher automatically filters out system drives to protect your data from accidental overwrites
+  </Card>
+  <Card title="Verified writes" icon="circle-check">
+    Every flash is followed by a verification pass that confirms every byte was written correctly
+  </Card>
+  <Card title="Cross-platform" icon="display">
+    Runs natively on Windows 10+, macOS 10.13+, and most Linux distros
+  </Card>
+  <Card title="Auto-decompression" icon="file-zipper">
+    Flash compressed images directly — no need to extract ZIP, GZ, or XZ files first
+  </Card>
+  <Card title="Multi-drive flashing" icon="copy">
+    Write the same image to multiple drives simultaneously in a single operation
+  </Card>
+  <Card title="Wide format support" icon="layer-group">
+    Supports ISO, IMG, DMG, VHD, ZIP, GZ, XZ, and many more image formats
+  </Card>
+</CardGroup>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## Get started in minutes
 
-## Need inspiration?
+<Steps>
+  <Step title="Download Etcher">
+    Visit [balena.io/etcher](https://balena.io/etcher) and download the installer for your operating system
+  </Step>
+  <Step title="Select your image">
+    Click **Flash from file** to choose a local image, or use **Flash from URL** to download one directly
+  </Step>
+  <Step title="Select your drive">
+    Click **Select target** and choose your SD card or USB drive — system drives are hidden for safety
+  </Step>
+  <Step title="Flash and verify">
+    Click **Flash!** and Etcher will write and then verify your image automatically
+  </Step>
+</Steps>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<Note>
+  Etcher is free and open source, licensed under the Apache 2.0 license. View the source code on [GitHub](https://github.com/balena-io/etcher).
+</Note>

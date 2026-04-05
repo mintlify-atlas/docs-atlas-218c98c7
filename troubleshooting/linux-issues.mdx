@@ -1,0 +1,96 @@
+---
+title: "Linux Troubleshooting"
+description: "Solutions for common issues when running Etcher on GNU/Linux, including polkit errors, Wayland compatibility, and runtime dependencies."
+---
+
+## "No polkit authentication agent found" error
+
+Etcher needs a [polkit authentication agent](https://wiki.archlinux.org/index.php/Polkit#Authentication_agents) running in your session to display a secure password prompt when it needs elevated privileges to write to a drive.
+
+If you see this error, install a polkit agent that matches your desktop environment:
+
+| Desktop environment | Polkit agent package |
+|---------------------|----------------------|
+| GNOME               | `polkit-gnome` (usually pre-installed) |
+| KDE Plasma          | `polkit-kde-agent` |
+| XFCE                | `xfce-polkit` or `polkit-gnome` |
+| LXQt                | `lxqt-policykit` |
+| i3 / other WMs      | `polkit-gnome` or `lxpolkit` |
+
+After installing the agent, start it and then relaunch Etcher.
+
+## Running on Wayland
+
+Electron (the framework Etcher is built on) is based on GTK2, which does not run natively on Wayland. The [XWayland Server](https://wayland.freedesktop.org/xserver.html) provides backwards compatibility so that any X client — including Etcher — can run on Wayland.
+
+On mainstream GNU/Linux distributions that properly support Wayland, this works out of the box. If Etcher does not launch, ensure the `xwayland.so` module is loaded by adding it to your `weston.ini`:
+
+```ini
+[core]
+modules=xwayland.so
+```
+
+See the [weston.ini man page](http://manpages.ubuntu.com/manpages/wily/man5/weston.ini.5.html) for the full configuration reference.
+
+## AppImage desktop shortcut prompt
+
+When you run the Etcher AppImage, it may prompt you to register a desktop shortcut. This is a feature provided by [AppImage](http://appimage.org) that creates a shortcut so you can launch Etcher from your application menu.
+
+To disable this prompt permanently, create one of the following files:
+
+```bash
+touch $HOME/.local/share/appimagekit/no_desktopintegration
+```
+
+or
+
+```bash
+touch /usr/share/appimagekit/no_desktopintegration
+```
+
+or
+
+```bash
+touch /etc/appimagekit/no_desktopintegration
+```
+
+Alternatively, set the `SKIP` environment variable when launching the AppImage:
+
+```bash
+SKIP=1 ./Etcher-linux-<arch>.AppImage
+```
+
+## Runtime dependencies
+
+The following libraries must be present on your system to run Etcher.
+
+### Electron dependencies
+
+These are required by the Electron framework:
+
+- `gtk+-2.0`
+- `dbus-1`
+- `x11`
+- `xi`
+- `xcursor`
+- `xdamage`
+- `xrandr`
+- `xcomposite`
+- `xext`
+- `xfixes`
+- `xrender`
+- `xtst`
+- `xscrnsaver`
+- `gmodule-2.0`
+- `nss`
+
+### Optional dependencies
+
+These extend functionality but are not required to run Etcher:
+
+- `libnotify` — desktop notifications
+- `libspeechd` — text-to-speech
+
+### Etcher-specific dependencies
+
+- `liblzma` — required for decompressing `.xz` compressed images

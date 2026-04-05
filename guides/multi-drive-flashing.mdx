@@ -1,0 +1,81 @@
+---
+title: "Flashing multiple drives"
+description: "Flash the same image to many SD cards or USB drives at the same time and review per-device results."
+---
+
+## Overview
+
+Etcher can write the same image to multiple drives simultaneously. All selected drives receive identical data in a single operation, which is useful when you need to provision a batch of devices with the same OS image.
+
+## Selecting multiple target drives
+
+<Steps>
+  <Step title="Select your source image">
+    Choose your image using **Flash from file** or **Flash from URL** as you normally would. See [Flashing images](/guides/flashing-images) for details.
+  </Step>
+  <Step title="Open the drive selector">
+    Click **Select target** to open the drive list.
+  </Step>
+  <Step title="Select all target drives">
+    Check the checkbox next to each drive you want to include. You can select as many drives as your system can simultaneously detect and write to. The selector shows each drive's name, device path, and size to help you identify the correct ones.
+
+    <Warning>
+      Verify each selected drive carefully. Flashing overwrites all existing data on every checked drive with no further confirmation.
+    </Warning>
+  </Step>
+  <Step title="Flash">
+    Click **Flash!** and confirm any privilege prompt. Etcher begins writing to all selected drives at the same time.
+  </Step>
+</Steps>
+
+## What happens during a multi-drive flash
+
+Etcher streams the source image to all selected drives in parallel through a single privileged write process. Each drive receives the same data independently — one slow or failing drive does not block the others.
+
+Progress is shown as a combined percentage across all drives. Speed reflects the aggregate throughput across all targets.
+
+### Verification
+
+After writing, Etcher verifies each drive independently. A drive passes verification only when the data read back from it matches the original image exactly. Verification runs in parallel across all drives, just like the write phase.
+
+<Tip>
+  Keep all drives connected until verification completes. Removing a drive during verification causes that drive to fail the verification check.
+</Tip>
+
+## Flash results
+
+When the operation finishes, Etcher shows a summary that includes:
+
+- **Bytes written** — total data written (same per drive, so this reflects the image size).
+- **Devices succeeded** — the count of drives that were written and verified without errors.
+- **Devices failed** — the count of drives where the write or verification produced an error.
+
+If some drives succeed and others fail, the successful drives are ready to use. Re-flash any failed drives individually or as a new batch.
+
+## Use cases
+
+<CardGroup cols={2}>
+  <Card title="Device provisioning" icon="boxes-stacked">
+    Prepare a fleet of embedded Linux devices (Raspberry Pi, Jetson, etc.) in one operation rather than flashing each drive sequentially.
+  </Card>
+  <Card title="Lab or classroom setup" icon="chalkboard">
+    Distribute identical OS environments across multiple machines at once, ensuring every device starts from the same image.
+  </Card>
+  <Card title="Event or demo kits" icon="display">
+    Create multiple copies of a demo image quickly before a presentation or event.
+  </Card>
+  <Card title="Redundant backups" icon="hard-drive">
+    Write a system image to several drives simultaneously to create multiple identical backups.
+  </Card>
+</CardGroup>
+
+## Performance considerations
+
+Writing to many drives at once divides your available USB bandwidth among all targets. Keep the following in mind:
+
+- **USB hubs** add latency and share bandwidth. Prefer drives connected directly to ports on the machine.
+- **USB 3.0** ports and drives write significantly faster than USB 2.0. Use USB 3.0 wherever possible.
+- **Drive speed** matters. Cheaper SD cards and USB drives have lower sustained write speeds. A single slow drive does not block others, but it does extend the total time until all drives complete.
+- **CPU and memory** usage increases with each additional drive. On lower-powered machines, flashing more than four or five drives at once may slow overall progress.
+
+If you notice very slow overall throughput, reduce the number of simultaneous drives or use a powered USB hub to ensure each port receives adequate power.

@@ -1,0 +1,66 @@
+---
+title: "Frequently Asked Questions"
+description: "Answers to common questions about flashing images, drive compatibility, and getting support with Etcher."
+---
+
+<AccordionGroup>
+  <Accordion title="Why is my drive not bootable?">
+    Etcher copies images to drives byte by byte without transforming the data, so images that require special treatment to be made bootable — such as Windows images — will not work out of the box.
+
+    For these images, use software provided by the image publisher:
+
+    - **Microsoft Windows ISO**: Use the [Windows USB/DVD Download Tool](https://www.microsoft.com/en-us/download/windows-usb-dvd-download-tool), [Rufus](https://rufus.akeo.ie), or [WoeUSB](https://github.com/slacka/WoeUSB).
+    - **Windows 10 IoT**: Use the [Windows 10 IoT Core Dashboard](https://developer.microsoft.com/en-us/windows/iot/downloads).
+
+    Most Linux distribution ISOs (including Ubuntu) flash correctly with Etcher and produce bootable drives without any extra steps.
+  </Accordion>
+
+  <Accordion title="How do I configure persistent storage?">
+    Persistent storage is currently not supported by Etcher. Persistent storage is a feature found in some tools that create GNU/Linux live USB drives, allowing data written during a live session to survive reboots.
+
+    If you need persistent storage, use [UNetbootin](https://unetbootin.github.io/) instead.
+  </Accordion>
+
+  <Accordion title="How do I flash Ubuntu ISOs?">
+    Ubuntu images (and some related GNU/Linux distributions) use a format that allows them to boot from both CDs and USB drives without modification. This is safe to flash with Etcher.
+
+    After flashing, tools like `parted` may display warnings similar to:
+
+    > /dev/xxx contains GPT signatures, indicating that it has a GPT table. However, it does not have a valid fake msdos partition table, as it should. Perhaps it was corrupted — possibly by a program that doesn't understand GPT partition tables.
+
+    > Warning: The driver descriptor says the physical block size is 2048 bytes, but Linux says it is 512 bytes.
+
+    <Note>
+      These warnings are safe to ignore. Your drive will boot correctly. See [Ubuntu's mailing list](https://lists.ubuntu.com/archives/ubuntu-devel/2011-June/033495.html) for a technical explanation.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Can I use the 'Flash with Etcher' button on my site?">
+    Yes. If you host an OS image and want your users to flash it with Etcher directly from your site or blog, add the following HTML where you want the button to appear, replacing `<your image URL>` with the direct URL to your image file:
+
+    ```html
+    <a href="https://efp.balena.io/open-image-url?imageUrl=<your image URL>">
+      <img src="http://balena.io/flash-with-etcher.png" />
+    </a>
+    ```
+
+    When a user clicks the button, Etcher opens and pre-loads your image URL for flashing.
+  </Accordion>
+
+  <Accordion title="How do I get support?">
+    There are two main ways to get help with Etcher:
+
+    **GitHub Issues**
+
+    If you've found a bug or want to make a suggestion, open a ticket on the [Etcher issue tracker](https://github.com/balena-io/etcher/issues). Search existing issues before opening a new one to avoid duplicates.
+
+    **Forums**
+
+    The [balena.io Discourse forum](https://forums.balena.io/c/etcher) is open to everyone. The balena.io team and community members can help answer questions.
+
+    When reporting an issue, include:
+    - The Etcher version you are running
+    - Your operating system and version
+    - Relevant log output from DevTools (open with `Ctrl+Shift+I` on Windows/Linux or `Cmd+Alt+I` on macOS)
+  </Accordion>
+</AccordionGroup>

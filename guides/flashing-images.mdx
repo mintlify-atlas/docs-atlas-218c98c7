@@ -1,0 +1,115 @@
+---
+title: "Flashing images"
+description: "A complete walkthrough of selecting a source image, choosing target drives, and flashing with verification."
+---
+
+## Overview
+
+Etcher writes OS images to SD cards and USB drives byte by byte, producing an exact copy of your source image on the target device. Every flash ends with an optional verification pass that reads the written data back and confirms it matches the original.
+
+## Selecting a source image
+
+<Steps>
+  <Step title="Open the source selector">
+    Launch Etcher. The main screen shows three steps: **Flash from file**, a target drive selector, and a **Flash!** button. Click the first step to choose your image source.
+  </Step>
+  <Step title="Choose your source type">
+    <Tabs>
+      <Tab title="Flash from file">
+        Click **Flash from file** and use the file picker to navigate to your image. Etcher supports all common image formats including `.img`, `.iso`, `.zip`, `.gz`, `.xz`, and more. See [Supported formats](/guides/supported-formats) for the full list.
+
+        Once selected, Etcher displays the image name and its uncompressed size.
+      </Tab>
+      <Tab title="Flash from URL">
+        Click **Flash from URL** and paste a direct download link to your image file. Etcher downloads the image and streams it directly to the drive — no need to save it to disk first.
+
+        <Note>
+          The URL must point directly to the image file, not to a web page or a redirect service.
+        </Note>
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Selecting target drives
+
+<Steps>
+  <Step title="Open the drive selector">
+    After selecting a source, click **Select target**. Etcher lists all removable drives it detects on your system.
+  </Step>
+  <Step title="Choose one or more drives">
+    Select the drive or drives you want to flash. Etcher shows each drive's name, device path, and size so you can identify the correct one.
+
+    <Warning>
+      Etcher hides your system disk by default, but double-check the drive name and size before continuing. Flashing overwrites all existing data on the target.
+    </Warning>
+  </Step>
+</Steps>
+
+To flash the same image to multiple drives simultaneously, see [Flashing multiple drives](/guides/multi-drive-flashing).
+
+## The flash process
+
+Click **Flash!** to start. Etcher may prompt for administrator or sudo privileges because writing to block devices requires elevated permissions.
+
+During the flash, Etcher shows:
+
+- **Overall progress** — a percentage and progress bar across all selected drives.
+- **Speed** — current write throughput in MB/s.
+- **ETA** — estimated time remaining.
+
+Etcher runs the write through a privileged child process that communicates progress back to the UI. If the child process exits unexpectedly before completing, Etcher reports an error and the drive should be considered incomplete.
+
+### What happens under the hood
+
+1. If the image is compressed (`.gz`, `.bz2`, `.xz`, `.zip`) and `decompressFirst` is enabled, Etcher decompresses the image before streaming to the drive.
+2. If `autoBlockmapping` is enabled, Etcher uses block mapping to skip unchanged blocks, which speeds up writes on images with large empty regions.
+3. Data is streamed to all selected drives in parallel.
+
+## Verification
+
+After writing, Etcher reads back every byte it wrote and compares it against the source image. This confirms the drive contains exactly what was written and catches hardware errors such as bad sectors or a loose cable.
+
+Verification progress appears in the same UI as the write progress. The step is labelled **Verifying** and shows a percentage as it works through the drive.
+
+<Tip>
+  Do not remove the drive during verification. Ejecting early may leave the drive in an inconsistent state.
+</Tip>
+
+### Why verification matters
+
+A write that appears to complete successfully can still result in a non-bootable drive if the hardware silently dropped or corrupted blocks. Verification catches these cases and lets you retry before you discover the problem on a target device.
+
+## Cancelling a flash
+
+You can cancel an in-progress flash or verification by clicking the **X** button that appears during the operation. Etcher sends a cancellation signal to the writer process. The drive is likely in a partially written state after cancellation and should be re-flashed from the beginning.
+
+## Flash results
+
+When the flash completes, Etcher shows a summary screen with:
+
+- **Bytes written** — total data written to the drive(s).
+- **Devices succeeded** — number of drives that were written and verified successfully.
+- **Devices failed** — number of drives where an error occurred.
+
+A successful flash shows a green confirmation. Click **Flash another** to return to the main screen and start a new flash.
+
+## If the flash fails
+
+<AccordionGroup>
+  <Accordion title="Try a different USB port or cable">
+    Marginal USB connections cause write errors and verification failures. Use a USB 3.0 port directly on the machine rather than a hub.
+  </Accordion>
+  <Accordion title="Try a different drive">
+    Flash memory has a finite write cycle life. If a drive fails consistently, it may be defective or worn out.
+  </Accordion>
+  <Accordion title="Recover the drive">
+    A failed flash can leave the drive in an unrecognised state. See [Recovering broken drives](/troubleshooting/recovering-drives) for instructions on how to reformat the drive on Windows, macOS, and Linux.
+  </Accordion>
+  <Accordion title="Re-download the image">
+    A corrupted download produces a bad image. Check the image's SHA256 checksum against the one published by the image provider before flashing again.
+  </Accordion>
+  <Accordion title="Check for permission errors on Linux">
+    Etcher requires a [polkit authentication agent](https://wiki.archlinux.org/index.php/Polkit#Authentication_agents) to request elevated privileges. If none is installed for your desktop environment, Etcher cannot obtain the permissions needed to write to block devices.
+  </Accordion>
+</AccordionGroup>

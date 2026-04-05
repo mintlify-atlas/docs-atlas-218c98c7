@@ -1,24 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "Etcher",
+  "projectType": "saas",
+  "projectName": "Etcher",
+  "projectDescription": "A free, open-source desktop application that safely and easily flashes OS images to SD cards and USB drives on Windows, macOS, and Linux.",
   "theme": "almond",
-  "colors": {
-    "primary": "#f6bf28",
-    "light": "#35afae",
-    "dark": "#f5f474"
-  },
-  "favicon": "https://media.brand.dev/f9687d15-f0f7-4100-8c4d-dfd2bbee48fa.png",
-  "navbar": {
-    "primary": {
-      "type": "github",
-      "href": "https://github.com/balena-io/etcher"
-    }
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/balena-io/etcher"
-    }
-  },
+  "primaryColor": "#f6bf28",
+  "lightColor": "#35afae",
+  "darkColor": "#f5f474",
   "navigation": {
     "tabs": [
       {
@@ -76,5 +63,25 @@
         ]
       }
     ]
-  }
+  },
+  "keyFeatures": [
+    "Safe flashing — prevents accidental writes to system drives",
+    "Write verification — validates every byte after flashing",
+    "Multi-drive flashing — write to multiple drives simultaneously",
+    "Wide format support — ISO, IMG, ZIP, GZ, XZ, DMG, and more",
+    "Cross-platform — runs on Windows, macOS, and Linux",
+    "Auto-decompression — flashes compressed images without manual extraction",
+    "Raspberry Pi USB boot support — direct flashing to Pi devices",
+    "Automatic updates — keeps the app current with latest releases"
+  ],
+  "publicApiSurface": [
+    "Flash OS image to SD card or USB drive",
+    "Select source image (local file, URL, or cloud)",
+    "Select target drive(s)",
+    "Monitor flash progress with speed and ETA",
+    "View flash results (bytes written, success/failure per device)",
+    "Cancel ongoing flash operation",
+    "Settings: errorReporting, updatesEnabled, desktopNotifications, autoBlockmapping, decompressFirst",
+    "Supported image formats: bin, bz2, dmg, dsk, etch, gz, hddimg, img, iso, raw, rpi-sdimg, sdcard, vhd, wic, xz, zip"
+  ]
 }
